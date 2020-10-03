@@ -350,8 +350,6 @@ public class EvaluationService {
 		Pattern p = Pattern.compile(regex);
 		String[] strings = string.split(" "); //split input by spaces
 		for(String word : strings) {		  //iterate through all of the words
-			System.out.println(word);
-
 			Matcher m = p.matcher(word);
 			if(word.matches("^[aeiou]{1}")) {//first word of string is a vowel
 				result =  result + word.concat("ay "); //simply append ay
@@ -363,7 +361,6 @@ public class EvaluationService {
 				result = result + word.concat(substring).concat("ay "); //add consonants and ay to end
 			}
 		}
-		System.out.println(result);
 		return result; //complete input translated to Pig Latin
 	}
 
@@ -407,8 +404,24 @@ public class EvaluationService {
 	 */
 	public List<Long> calculatePrimeFactorsOf(long l) {
 		List<Long> primeFactors = new ArrayList<Long>();
+		if(l % 2 == 0) //Checks if l is divisible by 2
+			primeFactors.add((long) 2);	// 2 is prime factor
 		
-		return null;
+		while(l % 2 == 0) { 
+			l = l / 2; //repeatedly divide l until it's odd
+		}
+		
+		for(int i = 3; i <= Math.sqrt(l); i += 2) {
+			while(l % i == 0) {
+				primeFactors.add((long)i);
+				l = l / i;
+			}
+		}
+		
+		if(l > 2) //l is itself a prime number
+			primeFactors.add(l);
+		
+		return primeFactors;
 	}
 
 	/**
@@ -446,8 +459,19 @@ public class EvaluationService {
 		}
 
 		public String rotate(String string) {
-			// TODO Write an implementation for this method declaration
-			return null;
+			StringBuilder builderString = new StringBuilder(string);
+			for(int i = 0; i < builderString.length(); ++i) {
+				Character c = builderString.charAt(i);
+				if(Character.isAlphabetic(c)) {
+					if(Character.isUpperCase(c)) {
+						builderString.setCharAt(i, (char) ((((c - 65) + this.key) % 26) + 65));
+					}
+					else if(Character.isLowerCase(c)){
+						builderString.setCharAt(i, (char) ((((c - 97) + this.key) % 26) + 97));
+					}
+				}	
+			}
+			return builderString.toString();
 		}
 
 	}
@@ -465,8 +489,31 @@ public class EvaluationService {
 	 * @return
 	 */
 	public int calculateNthPrime(int i) {
-		// TODO Write an implementation for this method declaration
-		return 0;
+		if(i < 1)
+			throw new IllegalArgumentException("int must be greater than 0");
+		List<Integer> primes = new ArrayList<>();
+		primes.add(2);
+		int j = 3;
+		while(primes.size() <= i) {
+			if(isPrime(j))
+				primes.add(j);
+				j += 2;
+		}
+		System.out.println(primes);
+		return primes.get(i - 1);
+	}
+	
+	//Helper function for calculateNthPrime
+	public boolean isPrime(int n) {
+		if(n <= 1)
+			return false;
+		if(n == 2)
+			return true;
+		for(int i = 2; i < (int) Math.sqrt(n) + 1; ++i) {
+			if(n % i == 0)
+				return false;
+		}
+		return true;
 	}
 
 	/**
@@ -502,8 +549,19 @@ public class EvaluationService {
 		 * @return
 		 */
 		public static String encode(String string) {
-			// TODO Write an implementation for this method declaration
-			return null;
+			string = string.replaceAll("[^a-zA-Z0-9]", "");
+			StringBuilder buildString = new StringBuilder(string);
+			for(int i = 0; i < buildString.length(); ++i) {
+				Character c = Character.toLowerCase(buildString.charAt(i));
+				if(Character.isAlphabetic(c)) {
+					buildString.setCharAt(i, (char) (Math.abs(c - 122) + 97));
+				}
+				if(i % 6 == 0) {
+					buildString.insert(i,  " ");
+					++i;
+				}
+			}
+			return buildString.toString().substring(1, buildString.length());
 		}
 
 		/**
@@ -513,8 +571,15 @@ public class EvaluationService {
 		 * @return
 		 */
 		public static String decode(String string) {
-			// TODO Write an implementation for this method declaration
-			return null;
+			string = string.replaceAll(" ", "");
+			StringBuilder buildString = new StringBuilder(string);
+			for(int i = 0; i < string.length(); ++i) {
+				Character c = buildString.charAt(i);
+				if(Character.isAlphabetic(c)) {
+					buildString.setCharAt(i, (char) (Math.abs(c - 122) + 97));
+				}
+			}
+			return buildString.toString();
 		}
 	}
 
@@ -606,10 +671,7 @@ public class EvaluationService {
 	 * @return
 	 */
 	public int getSumOfMultiples(int i, int[] set) {
-		List<Integer> sumOfMultiples = new ArrayList<Integer>();
-		for(int n = set[j]; n < set.length && n <= i ; n *= n) {
-			
-		}
+		
 		return 0;
 	}
 
