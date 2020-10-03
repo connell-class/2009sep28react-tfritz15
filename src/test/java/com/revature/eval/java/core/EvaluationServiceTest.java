@@ -275,7 +275,7 @@ public class EvaluationServiceTest {
 		List<Integer> sortedList = Collections.unmodifiableList(Arrays.asList(1, 3, 4, 6, 8, 9, 11));
 
 		EvaluationService.BinarySearch<Integer> search = new EvaluationService.BinarySearch<>(sortedList);
-
+		
 		assertEquals(6, search.indexOf(11));
 	}
 

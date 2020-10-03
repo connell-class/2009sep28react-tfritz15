@@ -1,8 +1,12 @@
 package com.revature.eval.java.core;
 
 import java.time.temporal.Temporal;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
+import java.util.HashMap;
 
 public class EvaluationService {
 
@@ -30,8 +34,13 @@ public class EvaluationService {
 	 * @return
 	 */
 	public String acronym(String phrase) {
-		// TODO Write an implementation for this method declaration
-		return null;
+		String acro = new String(); //Acronym of phrase
+		String[] splitString = phrase.split("\s|-"); //split phrase by spaces or hyphens
+		for(int i = 0; i < splitString.length; ++i)
+		{
+			acro = acro.concat(splitString[i].substring(0, 1)); //Add first letter of every string in splitString
+		}
+		return acro;
 	}
 
 	/**
@@ -84,17 +93,26 @@ public class EvaluationService {
 		}
 
 		public boolean isEquilateral() {
-			// TODO Write an implementation for this method declaration
+			//True if all sides are the same length
+			if(getSideOne() == getSideTwo() && getSideTwo() == getSideThree()) {
+				return true;
+			}
 			return false;
 		}
 
 		public boolean isIsosceles() {
-			// TODO Write an implementation for this method declaration
+			//True if at least two sides are the same length
+			if(getSideOne() == getSideTwo() || getSideTwo() == getSideThree() || getSideOne() == getSideThree()) {
+				return true;
+			}
 			return false;
 		}
 
 		public boolean isScalene() {
-			// TODO Write an implementation for this method declaration
+			//True if at least two sides are the same length
+			if(getSideOne() != getSideTwo() && getSideTwo() != getSideThree() && getSideOne() != getSideThree()) {
+				return true;
+			}
 			return false;
 		}
 
@@ -116,8 +134,34 @@ public class EvaluationService {
 	 * @return
 	 */
 	public int getScrabbleScore(String string) {
-		// TODO Write an implementation for this method declaration
-		return 0;
+		//TODO: implement with HashMap
+		int score = 0; //Current cumulative score of string
+		for(int i = 0; i < string.length(); ++i) {
+			switch(Character.toLowerCase(string.charAt(i))) {
+			case 'a': case 'e': case 'i': case 'o': case 'u': case 'l': case 'n': case 'r': case 's': case 't':
+				score += 1;
+				break;
+			case 'd': case 'g':
+				score += 2;
+				break;
+			case 'b': case 'c': case 'm': case 'p':
+				score += 3;
+				break;
+			case 'f': case 'h': case 'v': case 'w': case 'y':
+				score += 4;
+				break;
+			case 'k':
+				score += 5;
+				break;
+			case 'j': case 'x':
+				score += 8;
+				break;
+			case 'q': case 'z':
+				score += 10;
+				break;
+			}
+		}
+		return score;
 	}
 
 	/**
@@ -152,8 +196,12 @@ public class EvaluationService {
 	 * NANP-countries, only 1 is considered a valid country code.
 	 */
 	public String cleanPhoneNumber(String string) {
-		// TODO Write an implementation for this method declaration
-		return null;
+		string = string.replaceAll("[^0-9]", ""); //match and replace any non-numeric char with empty string
+		if(string.length() == 11) //If there is a possibility of a leading 1
+			string = string.replaceAll("^1", ""); //replace any leading 1 with empty string
+		if(string.length() < 10 || string.length() > 10) //invalid amount of numbers
+			throw new IllegalArgumentException(string + " has too many digits");
+		return string; //cleaned input
 	}
 
 	/**
@@ -166,8 +214,16 @@ public class EvaluationService {
 	 * @return
 	 */
 	public Map<String, Integer> wordCount(String string) {
-		// TODO Write an implementation for this method declaration
-		return null;
+		string = string.toLowerCase(); //make sure all words are lowercase for matching
+		Map<String, Integer> occurences = new HashMap<>(); //map to keep track of occurences of words
+		String[] arrayOfString = string.split(" "); //split string into array by space delimeter
+		for(String x : arrayOfString) {
+			if(!occurences.containsKey(x)) //if map doesn't already contain string, insert with count 1
+				occurences.put(x, 1);
+			else //String already exists in map
+				occurences.put(x, occurences.get(x) + 1); //increment number of occurences for string key 
+		}
+		return occurences;
 	}
 
 	/**
@@ -205,12 +261,54 @@ public class EvaluationService {
 	 * binary search is a dichotomic divide and conquer search algorithm.
 	 * 
 	 */
-	static class BinarySearch<T> {
+	static class BinarySearch<T extends Comparable<T>> {
 		private List<T> sortedList;
 
+		public int compareTo(T o) {
+			final int BEFORE = -1;
+			final int EQUAL = 0;
+			final int AFTER = 1;
+			 
+			//compare two generics by hashcode
+			if(this.hashCode() < o.hashCode())
+				return BEFORE;
+			else if(this.hashCode() > o.hashCode())
+				return AFTER;
+			else
+				return EQUAL;
+		}
+		
+		
 		public int indexOf(T t) {
-			// TODO Write an implementation for this method declaration
-			return 0;
+			int left = 0, right = sortedList.size() - 1, middle = (left + right) / 2;	
+			return indexOfHelper(t, left, middle, right); //return recursively found index from indexOfHelper
+		}
+		
+		//Helper function for indexOf that recursively finds index of t
+		public int indexOfHelper(T t, int left, int middle, int right) {
+			if(sortedList.isEmpty()) //check that list is not empty
+				return -1;
+			if(sortedList.size() == 1) //check if there's only 1 value in list
+				return 0;
+			if(left == right) //if right and left are equal, t is not in the list
+				return -1;	
+			if(t.equals(sortedList.get(middle))) //index of t is in the middle
+				return middle;
+			if(t.equals(sortedList.get(middle + 1))) //index of t is in the middle + 1
+				return middle + 1;
+			if(t.compareTo(sortedList.get(middle)) > 0) //t is greater than middle
+			{
+				left = middle;
+				middle = (left + right) / 2;
+				return indexOfHelper(t, left, middle, right);
+			}
+			if(t.compareTo(sortedList.get(middle)) < 0) //t is less than middle
+			{
+				right = middle;
+				middle = (left + right) / 2;
+				return indexOfHelper(t, left, middle, right);
+			}
+			return -1; //returns -1 by default
 		}
 
 		public BinarySearch(List<T> sortedList) {
@@ -246,8 +344,27 @@ public class EvaluationService {
 	 * @return
 	 */
 	public String toPigLatin(String string) {
-		// TODO Write an implementation for this method declaration
-		return null;
+		String regex = "^[^aeiou]+"; 	//regex that matches beginning of words that start with vowels
+		String result = ""; // pig latin result
+		int end = 0; 					//index of the last consonant at the beginning of a word
+		Pattern p = Pattern.compile(regex);
+		String[] strings = string.split(" "); //split input by spaces
+		for(String word : strings) {		  //iterate through all of the words
+			System.out.println(word);
+
+			Matcher m = p.matcher(word);
+			if(word.matches("^[aeiou]{1}")) {//first word of string is a vowel
+				result =  result + word.concat("ay "); //simply append ay
+			}
+			else{ //beginning of word is a consonant 
+				end = m.end(); //find index of last consonant at beginning of word
+				String substring = word.substring(0, end); //get substring of starting consonants
+				word = word.substring(end + 1, word.length() - 1); //string with starting consonants removed
+				result = result + word.concat(substring).concat("ay "); //add consonants and ay to end
+			}
+		}
+		System.out.println(result);
+		return result; //complete input translated to Pig Latin
 	}
 
 	/**
@@ -266,7 +383,15 @@ public class EvaluationService {
 	 * @return
 	 */
 	public boolean isArmstrongNumber(int input) {
-		// TODO Write an implementation for this method declaration
+		int length = Integer.toString(input).length();
+		int cumulative = 0;
+		int origValue = input;
+		while(origValue > 0) {
+			cumulative += Math.pow(origValue % 10 , length);
+			origValue /= 10;
+		}
+		if(cumulative == input)
+			return true;
 		return false;
 	}
 
@@ -281,7 +406,8 @@ public class EvaluationService {
 	 * @return
 	 */
 	public List<Long> calculatePrimeFactorsOf(long l) {
-		// TODO Write an implementation for this method declaration
+		List<Long> primeFactors = new ArrayList<Long>();
+		
 		return null;
 	}
 
@@ -433,7 +559,23 @@ public class EvaluationService {
 	 * @return
 	 */
 	public boolean isPangram(String string) {
-		// TODO Write an implementation for this method declaration
+		int alphaVerified = 0; // number of alphabetic characters that are in string
+		string.replace("[^a-zA-z]", ""); //replace any characters that are not alphabetic
+		Map<Character, Boolean> alphabet = new HashMap<Character, Boolean>();
+		for(int i = 0; i < string.length(); ++i) {
+			alphabet.putIfAbsent(string.charAt(i), true);
+		}
+		
+		List<Boolean> verify = new ArrayList<Boolean>(alphabet.values());
+		for(int i = 0; i < verify.size(); ++i) {
+			if(verify.get(i))
+				alphaVerified += 1;
+		}
+		
+		if(alphaVerified == 26) {
+			return true;
+		}
+		
 		return false;
 	}
 
@@ -464,7 +606,10 @@ public class EvaluationService {
 	 * @return
 	 */
 	public int getSumOfMultiples(int i, int[] set) {
-		// TODO Write an implementation for this method declaration
+		List<Integer> sumOfMultiples = new ArrayList<Integer>();
+		for(int n = set[j]; n < set.length && n <= i ; n *= n) {
+			
+		}
 		return 0;
 	}
 
