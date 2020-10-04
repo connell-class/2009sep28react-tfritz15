@@ -1,7 +1,11 @@
 package com.revature.eval.java.core;
 
 import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
+import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -38,10 +42,9 @@ public class EvaluationService {
 	 */
 	public String acronym(String phrase) {
 		String acro = new String(); //Acronym of phrase
-		String[] splitString = phrase.split("\s|-"); //split phrase by spaces or hyphens
-		for(int i = 0; i < splitString.length; ++i)
-		{
-			acro = acro.concat(splitString[i].substring(0, 1)); //Add first letter of every string in splitString
+		String[] splitString = phrase.split("[\s-]"); //split phrase by spaces or hyphens
+		for(int i = 0; i < splitString.length; ++i) {
+			acro = acro.concat(splitString[i].substring(0, 1).toUpperCase()); //Add first letter of every string in splitString
 		}
 		return acro;
 	}
@@ -218,6 +221,7 @@ public class EvaluationService {
 	 */
 	public Map<String, Integer> wordCount(String string) {
 		string = string.toLowerCase(); //make sure all words are lowercase for matching
+		string = string.replaceAll("[^a-z]", " ").replaceAll("[ ]{2,}", " "); //ensure only words with one space between
 		Map<String, Integer> occurences = new HashMap<>(); //map to keep track of occurences of words
 		String[] arrayOfString = string.split(" "); //split string into array by space delimeter
 		for(String x : arrayOfString) {
@@ -358,16 +362,13 @@ public class EvaluationService {
 				}
 				else
 					words[i] = words[i].concat(foundSubstring + "ay");
-				System.out.println("Vowel beginning for " + words[i] + ": " + foundSubstring);
 			}
 			
 			while(consonantBeginning.find()) {
 				String foundSubstring = consonantBeginning.group();
 				words[i] = words[i].replaceAll(foundSubstring, "").concat(foundSubstring + "ay");
-				System.out.println("Vowel beginning for " + string + ": " + foundSubstring);
 			}
 		}
-		System.out.println(String.join(" ", words));
 		return String.join(" ", words);
 	}
 
@@ -507,7 +508,6 @@ public class EvaluationService {
 				primes.add(j);
 				j += 2;
 		}
-		System.out.println(primes);
 		return primes.get(i - 1);
 	}
 	
@@ -669,8 +669,13 @@ public class EvaluationService {
 	 * @return
 	 */
 	public Temporal getGigasecondDate(Temporal given) {
-		Duration gigasecond = Duration.ofSeconds(1000000000);
-		return given.plus(gigasecond);
+		long gigaSecond = 1000000000;
+		if(given.isSupported(ChronoUnit.SECONDS))
+			return given.plus(gigaSecond, ChronoUnit.SECONDS);
+		else if (given instanceof LocalDate)
+			return ((LocalDate) given).atStartOfDay().plus(gigaSecond, ChronoUnit.SECONDS);
+		else
+			return null;
 	}
 
 	/**
@@ -746,12 +751,10 @@ public class EvaluationService {
 		Pattern p = Pattern.compile("[^0-9]");
 		Matcher matcher = p.matcher(reverseString);
 		if(matcher.find()) {
-			System.out.println("None numeric character found.");
 			return false;
 		}
 		for(int i = 0; i < reverseString.length(); ++i) {
 			int currentInt = Integer.parseInt(reverseString.substring(i, i + 1));
-			System.out.println(currentInt);
 			if(i % 2 == 1) {
 				currentInt = currentInt * 2;
 				if(currentInt > 9)
@@ -762,7 +765,6 @@ public class EvaluationService {
 				total += currentInt;
 				
 		}
-		System.out.println("Total for luhn number: " + total);
 		if(total % 10 == 0)
 			return true;
 		else
