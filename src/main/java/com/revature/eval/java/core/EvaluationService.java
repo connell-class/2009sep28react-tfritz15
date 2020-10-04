@@ -1,12 +1,15 @@
 package com.revature.eval.java.core;
 
+import java.time.Duration;
 import java.time.temporal.Temporal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
 
 public class EvaluationService {
 
@@ -606,8 +609,23 @@ public class EvaluationService {
 	 * @return
 	 */
 	public boolean isValidIsbn(String string) {
-		// TODO Write an implementation for this method declaration
-		return false;
+		int modifier = 10;
+		int total = 0;
+		int convertInt = 0;
+		string = string.replaceAll("[^0-9X]", "");
+		for(int i = 0; i < string.length(); ++i) {
+			if(string.charAt(i) == 'X') {
+				convertInt = 10;
+			}
+			else
+				convertInt = Integer.parseInt(string.substring(i, i+1));
+			total = total + (convertInt * modifier);
+			--modifier;
+		}
+		if(total % 11 == 0)
+			return true;
+		else
+			return false;
 	}
 
 	/**
@@ -624,22 +642,15 @@ public class EvaluationService {
 	 * @return
 	 */
 	public boolean isPangram(String string) {
-		int alphaVerified = 0; // number of alphabetic characters that are in string
-		string.replace("[^a-zA-z]", ""); //replace any characters that are not alphabetic
+		string = string.replace("[^a-zA-z]", ""); //replace any characters that are not alphabetic
 		Map<Character, Boolean> alphabet = new HashMap<Character, Boolean>();
 		for(int i = 0; i < string.length(); ++i) {
-			alphabet.putIfAbsent(string.charAt(i), true);
+			if(Character.isAlphabetic(string.charAt(i)))
+				alphabet.putIfAbsent(Character.toLowerCase(string.charAt(i)), true);
 		}
 		
-		List<Boolean> verify = new ArrayList<Boolean>(alphabet.values());
-		for(int i = 0; i < verify.size(); ++i) {
-			if(verify.get(i))
-				alphaVerified += 1;
-		}
-		
-		if(alphaVerified == 26) {
+		if(alphabet.size() == 26)
 			return true;
-		}
 		
 		return false;
 	}
@@ -653,8 +664,8 @@ public class EvaluationService {
 	 * @return
 	 */
 	public Temporal getGigasecondDate(Temporal given) {
-		// TODO Write an implementation for this method declaration
-		return null;
+		Duration gigasecond = Duration.ofSeconds(1000000000);
+		return given.plus(gigasecond);
 	}
 
 	/**
@@ -671,8 +682,19 @@ public class EvaluationService {
 	 * @return
 	 */
 	public int getSumOfMultiples(int i, int[] set) {
-		
-		return 0;
+		Set<Integer> multiples = new HashSet<>();
+		int total = 0;
+		for(int j = 0; j < set.length; ++j) { //iterate through entire set
+			for(int k = 1; k < i; ++k) { //iterate through natural numbers  below i
+				if( k % set[j] == 0) { //if natural numbers modded by numbers in set equal 0, add to total
+					multiples.add(k);
+				}
+			}
+		}
+		for(int x : multiples) {
+			total += x;
+		}
+		return total;
 	}
 
 	/**
@@ -712,8 +734,34 @@ public class EvaluationService {
 	 * @return
 	 */
 	public boolean isLuhnValid(String string) {
-		// TODO Write an implementation for this method declaration
-		return false;
+		int total = 0;
+		string = string.replace(" ", "");
+		StringBuilder reverseString = new StringBuilder(string);
+		reverseString.reverse();
+		Pattern p = Pattern.compile("[^0-9]");
+		Matcher matcher = p.matcher(reverseString);
+		if(matcher.find()) {
+			System.out.println("None numeric character found.");
+			return false;
+		}
+		for(int i = 0; i < reverseString.length(); ++i) {
+			int currentInt = Integer.parseInt(reverseString.substring(i, i + 1));
+			System.out.println(currentInt);
+			if(i % 2 == 1) {
+				currentInt = currentInt * 2;
+				if(currentInt > 9)
+					currentInt = currentInt - 9;
+				total += currentInt;
+			}
+			else
+				total += currentInt;
+				
+		}
+		System.out.println("Total for luhn number: " + total);
+		if(total % 10 == 0)
+			return true;
+		else
+			return false;
 	}
 
 	/**
@@ -744,8 +792,27 @@ public class EvaluationService {
 	 * @return
 	 */
 	public int solveWordProblem(String string) {
-		// TODO Write an implementation for this method declaration
-		return 0;
+		Matcher addMatcher = Pattern.compile("\splus\s").matcher(string);
+		Matcher subtractMatcher = Pattern.compile("\sminus\s").matcher(string);
+		Matcher divideMatcher = Pattern.compile("\sdivided\s").matcher(string);
+		Matcher multiplyMatcher = Pattern.compile("\smultiplied\s").matcher(string);
+		Matcher numberMatcher = Pattern.compile("-?[0-9]+").matcher(string);
+		int num1 = 0, num2 = 0;
+		if(numberMatcher.find())
+			num1 = Integer.parseInt(numberMatcher.group());
+		if(numberMatcher.find())
+			num2 = Integer.parseInt(numberMatcher.group());
+		if(addMatcher.find()) {
+			return num1 + num2;
+		} else if (subtractMatcher.find()) {
+			return num1 - num2;
+		} else if (divideMatcher.find() && num2 != 0) {
+			return num1 / num2;
+		} else if(multiplyMatcher.find()) {
+			return num1 * num2;
+		}
+		else
+			throw new IllegalArgumentException("Input is invalid");
 	}
 
 }
