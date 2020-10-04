@@ -347,24 +347,28 @@ public class EvaluationService {
 	 * @return
 	 */
 	public String toPigLatin(String string) {
-		String regex = "^[^aeiou]+"; 	//regex that matches beginning of words that start with vowels
-		String result = ""; // pig latin result
-		int end = 0; 					//index of the last consonant at the beginning of a word
-		Pattern p = Pattern.compile(regex);
-		String[] strings = string.split(" "); //split input by spaces
-		for(String word : strings) {		  //iterate through all of the words
-			Matcher m = p.matcher(word);
-			if(word.matches("^[aeiou]{1}")) {//first word of string is a vowel
-				result =  result + word.concat("ay "); //simply append ay
+		String[] words = string.split(" ");
+		for(int i = 0; i < words.length; ++i) {
+			Matcher vowelBeginning = Pattern.compile("^[aeiou]+").matcher(words[i]);
+			Matcher consonantBeginning = Pattern.compile("(qu)|^[bcdfghjklmnpqrstvwxyz]+").matcher(words[i]);
+			while(vowelBeginning.find()) {
+				String foundSubstring = vowelBeginning.group();
+				if(foundSubstring != "a") {
+					words[i] = words[i].concat("ay");
+				}
+				else
+					words[i] = words[i].concat(foundSubstring + "ay");
+				System.out.println("Vowel beginning for " + words[i] + ": " + foundSubstring);
 			}
-			else{ //beginning of word is a consonant 
-				end = m.end(); //find index of last consonant at beginning of word
-				String substring = word.substring(0, end); //get substring of starting consonants
-				word = word.substring(end + 1, word.length() - 1); //string with starting consonants removed
-				result = result + word.concat(substring).concat("ay "); //add consonants and ay to end
+			
+			while(consonantBeginning.find()) {
+				String foundSubstring = consonantBeginning.group();
+				words[i] = words[i].replaceAll(foundSubstring, "").concat(foundSubstring + "ay");
+				System.out.println("Vowel beginning for " + string + ": " + foundSubstring);
 			}
 		}
-		return result; //complete input translated to Pig Latin
+		System.out.println(String.join(" ", words));
+		return String.join(" ", words);
 	}
 
 	/**
@@ -407,10 +411,11 @@ public class EvaluationService {
 	 */
 	public List<Long> calculatePrimeFactorsOf(long l) {
 		List<Long> primeFactors = new ArrayList<Long>();
-		if(l % 2 == 0) //Checks if l is divisible by 2
-			primeFactors.add((long) 2);	// 2 is prime factor
+		/*if(l % 2 == 0) //Checks if l is divisible by 2
+			primeFactors.add((long) 2);	// 2 is prime factor*/
 		
 		while(l % 2 == 0) { 
+			primeFactors.add((long) 2);
 			l = l / 2; //repeatedly divide l until it's odd
 		}
 		
