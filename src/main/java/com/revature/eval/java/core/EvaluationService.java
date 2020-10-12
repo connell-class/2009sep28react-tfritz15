@@ -39,7 +39,8 @@ public class EvaluationService {
 	 */
 	public String acronym(String phrase) {
 		String acro = new String(); //Acronym of phrase
-		String[] splitString = phrase.split("[\s-]"); //split phrase by spaces or hyphens
+		//changed /s within brackets to " "
+		String[] splitString = phrase.split("[ -]"); //split phrase by spaces or hyphens
 		for(int i = 0; i < splitString.length; ++i) {
 			acro = acro.concat(splitString[i].substring(0, 1).toUpperCase()); //Add first letter of every string in splitString
 		}
