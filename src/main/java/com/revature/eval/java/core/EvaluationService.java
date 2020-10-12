@@ -799,10 +799,10 @@ public class EvaluationService {
 	 * @return
 	 */
 	public int solveWordProblem(String string) {
-		Matcher addMatcher = Pattern.compile("\splus\s").matcher(string);
-		Matcher subtractMatcher = Pattern.compile("\sminus\s").matcher(string);
-		Matcher divideMatcher = Pattern.compile("\sdivided\s").matcher(string);
-		Matcher multiplyMatcher = Pattern.compile("\smultiplied\s").matcher(string);
+		Matcher addMatcher = Pattern.compile(" plus ").matcher(string);
+		Matcher subtractMatcher = Pattern.compile(" minus ").matcher(string);
+		Matcher divideMatcher = Pattern.compile(" divided ").matcher(string);
+		Matcher multiplyMatcher = Pattern.compile(" multiplied ").matcher(string);
 		Matcher numberMatcher = Pattern.compile("-?[0-9]+").matcher(string);
 		int num1 = 0, num2 = 0;
 		if(numberMatcher.find())
