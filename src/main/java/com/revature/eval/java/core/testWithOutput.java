@@ -1,7 +1,5 @@
 package com.revature.eval.java.core;
 
-import static org.junit.Assert.assertEquals;
-
 import com.revature.eval.java.core.EvaluationService.AtbashCipher;
 
 public class testWithOutput {

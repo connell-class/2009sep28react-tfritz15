@@ -1,11 +1,8 @@
 package com.revature.eval.java.core;
 
-import java.time.Duration;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
-import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -330,6 +327,10 @@ public class EvaluationService {
 		public void setSortedList(List<T> sortedList) {
 			this.sortedList = sortedList;
 		}
+		
+		public void binarySearchExample() {
+			BinarySearch<String> mySearch = new BinarySearch<String>(null);
+		}
 
 	}
 
@@ -412,8 +413,6 @@ public class EvaluationService {
 	 */
 	public List<Long> calculatePrimeFactorsOf(long l) {
 		List<Long> primeFactors = new ArrayList<Long>();
-		/*if(l % 2 == 0) //Checks if l is divisible by 2
-			primeFactors.add((long) 2);	// 2 is prime factor*/
 		
 		while(l % 2 == 0) { 
 			primeFactors.add((long) 2);
